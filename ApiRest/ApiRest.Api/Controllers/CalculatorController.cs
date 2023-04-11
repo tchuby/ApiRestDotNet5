@@ -37,6 +37,17 @@ namespace ApiRest.Api.Controllers
             return BadRequest("Invalid input.");
         }
 
+        [HttpGet("multiplication/{firstNumber}/{secondNumber}")]
+        public IActionResult GetMultiplication(string firstNumber, string secondNumber)
+        {
+            if (IsNumeric(firstNumber) && IsNumeric(secondNumber))
+            {
+                var multiplication = ConvertToDecimal(firstNumber) * ConvertToDecimal(secondNumber);
+                return Ok(multiplication.ToString());
+            }
+            return BadRequest("Invalid input.");
+        }
+
         [HttpGet("division/{firstNumber}/{secondNumber}")]
         public IActionResult GetDivision(string firstNumber, string secondNumber)
         {
@@ -65,8 +76,8 @@ namespace ApiRest.Api.Controllers
             try
             {
                 var number = ConvertToDecimal(numberInput);
-                var subtraction = number * number;
-                return Ok(subtraction.ToString());
+                var squareRoot = Math.Sqrt((double)number);
+                return Ok(squareRoot.ToString());
             }
             catch(Exception e){
                 _logger.LogError(e, "Invalid input.", null);
