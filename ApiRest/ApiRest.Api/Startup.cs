@@ -1,3 +1,5 @@
+using ApiRest.Api.Model.Services;
+using ApiRest.Api.Model.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,8 @@ namespace ApiRest.Api
         {
 
             services.AddControllers();
+            //Dependence injection.
+            services.AddScoped<IPersonService, PersonServiceImplementation>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
