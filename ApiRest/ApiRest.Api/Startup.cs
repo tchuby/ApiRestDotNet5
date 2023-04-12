@@ -1,7 +1,9 @@
+using ApiRest.Api.Model.Context;
 using ApiRest.Api.Model.Services;
 using ApiRest.Api.Model.Services.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +24,11 @@ namespace ApiRest.Api
         {
 
             services.AddControllers();
+
+            var connection = Configuration["MySQLConnection:MySQLConnectionString"];
+
+            services.AddDbContext<MySQLContext>(options => options.UseMySql(connection));
+
             //Dependence injection.
             services.AddScoped<IPersonService, PersonServiceImplementation>();
         }

@@ -1,63 +1,84 @@
-﻿using System;
+﻿using ApiRest.Api.Model.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ApiRest.Api.Model.Services.Implementations
 {
     public class PersonServiceImplementation : IPersonService
     {
-        private Person person;
+        private MySQLContext _context;
+
+        public PersonServiceImplementation(MySQLContext context)
+        {
+            _context = context;
+        }
+
+        public List<Person> FindAll()
+        {
+            return _context.Persons.ToList();
+        }
+
+        public Person FindById(long id)
+        {
+            return _context.Persons.SingleOrDefault(p => p.Id.Equals(id));
+        }
 
         public Person Create(Person person)
         {
+            try
+            {
+                _context.Add(person);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return person;
+        }
+
+        public Person Update(Person person)
+        {
+            if (!Existis(person.Id))
+                return null;
+
+            var result = _context.Persons.SingleOrDefault(p => p.Id.Equals(person.Id));
+            if (result == null)
+                return null;
+
+            try
+            {
+                _context.Entry(result).CurrentValues.SetValues(person);
+                _context.SaveChanges();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
             return person;
         }
 
         public void Delete(long id)
         {
-            //
-        }
+            var result = _context.Persons.SingleOrDefault(p => p.Id.Equals(id));
 
-        public List<Person> FindAll()
-        {
-            var people = new List<Person>();
-            for(int i = 1; i < 7; i++)
+            try
             {
-                string gender = "Female";
-
-                if(i % 2 == 1)
-                    gender = "Male";
-
-                Person person = new Person
-                {
-                    Id = i,
-                    FirstName = "Person #"+i,
-                    LastName = "XX",
-                    Address = "Blumenau - SC.",
-                    Gender = gender
-                };
-
-                people.Add(person);
+                _context.Persons.Remove(result);
+                _context.SaveChanges();
             }
-            return people;
-        }
-
-        public Person FindById(long id)
-        {
-            return new Person
+            catch (Exception)
             {
-                Id = id,
-                FirstName = "Mussum",
-                LastName = "Manguaça",
-                Address = "Morro da Mangueira.",
-                Gender = "Male"
-            };
+                //
+            }
         }
 
-        public Person Update(Person person)
+        private bool Existis(long id)
         {
-            return person;
+            return _context.Persons.Any(p => p.Id.Equals(id));
         }
     }
 }
